@@ -1,0 +1,5 @@
+[] make it expand to multiple lines for a loop or function, or anytime the last character in the input is '}'
+
+[] add syntax highlighting
+
+[] allow for functions to be redefined, right now if you redefine a function compiler throws an error
