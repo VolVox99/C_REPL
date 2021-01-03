@@ -1,3 +1,0 @@
-[] make it expand to multiple lines for a loop or function, or anytime the last character in the input is '}'
-
-[] add syntax highlighting
