@@ -1,0 +1,3 @@
+[console_scripts]
+c_repl = c_repl.__main__:main
+
