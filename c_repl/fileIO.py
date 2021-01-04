@@ -21,12 +21,12 @@ class FileIO:
             
             except Exception as e:
                 # print(e)
-                # self = args[0]
-                # with open(self.file, 'w') as f:
-                #     f.write(self.boiler_plate)
+                self = args[0]
+                with open(self.file, 'w') as f:
+                    f.write(self.boiler_plate)
                 
-                # return func(*args, **kwargs)
-                pass
+                return func(*args, **kwargs)
+
 
         return inner
 
