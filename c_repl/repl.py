@@ -6,8 +6,9 @@ class Repl:
         self.executer = Executer()
         self.command_start = '/'
         self._commands = {
-            'quit': lambda: sys.exit(),
-            'reset': lambda: self.executer.reset,
+            #|| -> both keys map to same value
+            'quit || exit': lambda: sys.exit(),
+            'reset': lambda: self.executer.reset(),
             'undo': lambda: self.executer.fileIO.delete_last_line(),
             'abort': lambda: 0,
             'help': lambda: self.help_command(),
@@ -27,10 +28,10 @@ class Repl:
     
     @property
     def commands(self):
-        return {self.command_start + k: v for k, v in self._commands.items()}
+        return {self.command_start + key.strip():v for k, v in self._commands.items() for key in k.split('||')}
 
     @staticmethod
-    def clean(code):
+    def condense(code):
         return code.strip().replace('\n', ' ')
 
     @staticmethod
@@ -75,28 +76,25 @@ class Repl:
                     indent_level -= 1
 
                 code += new_code
-                print(f'{new_code = }, total_code = {code}, check_end_of_line = {self.check_end_of_line(new_code, code)}')
                 if self.check_end_of_line(new_code, code):
+                    print(True)
                     break
 
                 elif self.check_for_command(new_code):
                     return ''
                 
                 #recursion to account for nested, ie for loop in function
-                code = self.check_multiline(self.clean(code), indent_level + 1)
+                code = self.check_multiline(self.condense(code), indent_level + 1)
 
-        return self.clean(code)
-
-
-
+        return self.condense(code)
 
 
     def run(self):
         while True:
             self.print_start(self.regular_start)
-            code = self.get_input()
+            code = self.condense(self.get_input())
             if not self.check_for_command(code):
-                code = self.clean(code)
+                if not code: continue
                 code = self.check_multiline(code)
                 self.execute_code(code)
                 self.executer.cleanup(code)
