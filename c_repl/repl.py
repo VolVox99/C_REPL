@@ -19,7 +19,7 @@ class Repl:
         return {self.command_start + k: v for k, v in self._commands.items()}
 
     def execute_command(self, command, *args, **kwargs):
-        return self.commands[self.command_start + command](*args, **kwargs)
+        return self.commands[command](*args, **kwargs)
 
     def check_for_command(self, code):
         for command in self.commands:

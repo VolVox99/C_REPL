@@ -1,4 +1,4 @@
-from c_repl.Repl import Repl
+from c_repl.repl import Repl
 
 def main():
     Repl().run()
