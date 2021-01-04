@@ -8,7 +8,9 @@ class Repl:
         self._commands = {
             'quit': lambda: sys.exit(),
             'reset': lambda: self.executer.reset,
-            'undo': lambda: self.executer.fileIO.delete_last_line()
+            'undo': lambda: self.executer.fileIO.delete_last_line(),
+            'abort': lambda: 0,
+            'help': lambda: self.help_command(),
         }
 
         self._regular_start = '>>>'
@@ -31,7 +33,6 @@ class Repl:
     def clean(code):
         return code.strip().replace('\n', ' ')
 
-
     @staticmethod
     def print_start(start):
         print(start, end = '')
@@ -43,6 +44,10 @@ class Repl:
     @staticmethod
     def check_end_of_line(code_section, total_code):
         return code_section == '' or code_section.endswith('}') and total_code.count('{') == total_code.count('}')
+
+    @staticmethod
+    def help_command():
+        pass
 
     def execute_command(self, command, *args, **kwargs):
         return self.commands[command](*args, **kwargs)
@@ -70,7 +75,8 @@ class Repl:
                     indent_level -= 1
 
                 code += new_code
-                if (self.check_end_of_line(new_code, code)):
+                print(f'{new_code = }, total_code = {code}, check_end_of_line = {self.check_end_of_line(new_code, code)}')
+                if self.check_end_of_line(new_code, code):
                     break
 
                 elif self.check_for_command(new_code):
