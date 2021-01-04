@@ -77,7 +77,6 @@ class Repl:
 
                 code += new_code
                 if self.check_end_of_line(new_code, code):
-                    print(True)
                     break
 
                 elif self.check_for_command(new_code):
