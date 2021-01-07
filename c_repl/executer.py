@@ -14,7 +14,7 @@ class Executer:
 
     @staticmethod
     def run_command(command):
-        return check_output(command).decode()
+        return check_output(['cmd', '/c', command]).decode()
 
     def interpret(self, code):
         self.fileIO.write_code_to_file(code)

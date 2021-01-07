@@ -18,6 +18,10 @@ class Repl:
         self._multiline_start = '...'
         self.indent = '\t'
 
+
+        self.title = 'C REPL'
+        self.set_title()
+
     @property
     def multiline_start(self):
         return self._multiline_start + ' '
@@ -50,7 +54,11 @@ class Repl:
     def help_command():
         pass
 
-    def execute_command(self, command, *args, **kwargs):
+    def set_title(self):
+        self.executer.run_command(f'title {self.title}')
+
+
+    def execute_command(self, command :str, *args, **kwargs):
         return self.commands[command](*args, **kwargs)
 
     def check_for_command(self, code):
@@ -59,7 +67,7 @@ class Repl:
                 return self.execute_command(command) or True
                 
         return False
-
+    
 
     def execute_code(self, code):
         print(self.executer.interpret(code))
