@@ -44,7 +44,7 @@ class Repl:
 
     @staticmethod
     def check_end_of_line(code_section, total_code):
-        return code_section == '' or code_section.endswith('}') and total_code.count('{') == total_code.count('}')
+        return code_section == '' or (code_section.endswith('}') or code_section.endswith('};')) and total_code.count('{') == total_code.count('}')
 
     @staticmethod
     def help_command():
