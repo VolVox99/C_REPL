@@ -57,6 +57,27 @@ class FileIO:
 
         with open(self.file, 'w') as f:
             f.write(code)
+    
+    @_reset_file_on_error
+    def file_empty(self):
+        with open(self.file, 'r') as f:
+            code_lines = f.read().splitlines()
+
+        start = 0
+        for idx, line in enumerate(code_lines):
+            if "int main(" in line:
+                start = idx
+                break
+
+        # + 1 to not include the main function line, -1 to not include last closing line
+        try:
+            user_code = '\n'.join(code_lines[start + 1: -1])
+        except:
+            return True
+
+        return not bool(user_code.replace(' ', '').replace('\n', ''))
+
+
 
     @_reset_file_on_error
     def write_code_to_file(self, code):

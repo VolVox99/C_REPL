@@ -9,7 +9,7 @@ class Repl:
             #|| -> both keys map to same value
             'quit || exit': lambda: sys.exit(),
             'reset': lambda: self.executer.reset(),
-            'undo': lambda: self.executer.fileIO.delete_last_line(),
+            'undo': lambda: self.executer.fileIO.file_empty() or self.executer.fileIO.delete_last_line(),
             'abort': lambda: 0,
             'help': lambda: self.help_command(),
         }
@@ -17,8 +17,6 @@ class Repl:
         self._regular_start = '>>>'
         self._multiline_start = '...'
         self.indent = '\t'
-
-
         self.title = 'C REPL'
         self.set_title()
 
@@ -43,10 +41,6 @@ class Repl:
         print(start, end = '')
 
     @staticmethod
-    def get_input():
-        return input()
-
-    @staticmethod
     def check_end_of_line(code_section, total_code):
         return not code_section or (code_section.endswith('}') or code_section.endswith('};')) and total_code.count('{') == total_code.count('}')
 
@@ -56,7 +50,6 @@ class Repl:
 
     def set_title(self):
         self.executer.run_command(f'title {self.title}')
-
 
     def execute_command(self, command :str, *args, **kwargs):
         return self.commands[command](*args, **kwargs)
@@ -68,14 +61,19 @@ class Repl:
                 
         return False
     
-
     def execute_code(self, code):
         print(self.executer.interpret(code))
 
+    def get_input(self):
+        try:
+            return input()
+            
+        except (KeyboardInterrupt, EOFError):
+            self.execute_command('/quit')
 
     def check_multiline(self, code, indent_level = 1):
 
-        if code.endswith('{') or not code.endswith(';') and not code.endswith('}'):
+        if code.endswith('{') or (not code.endswith(';') and not code.endswith('}') and not code.startswith('#')):
             while True:
                 total_indent_level = self.indent * (indent_level + code.count('   ') + code.count(self.indent) )
                 self.print_start(self.multiline_start + total_indent_level)
