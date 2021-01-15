@@ -14,7 +14,7 @@ class Executer:
 
     @staticmethod
     def run_command(command):
-        return check_output(['cmd', '/c', command]).decode()
+        return check_output(command, shell = True).decode()
 
     def interpret(self, code):
         self.fileIO.write_code_to_file(code)
@@ -33,7 +33,7 @@ class Executer:
         else:
             self.removed_last_line_on_error = False
 
-        return self.run_command(f'./{self.output_file}')
+        return self.run_command(self.output_file)
 
     def reset(self):
         self.__init__()
