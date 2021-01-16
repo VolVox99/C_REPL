@@ -72,6 +72,7 @@ class FileIO:
         # + 1 to not include the main function line, -1 to not include last closing line
         try:
             user_code = '\n'.join(code_lines[start + 1: -1])
+            
         except:
             return True
 

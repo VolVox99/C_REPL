@@ -59,6 +59,7 @@ class Repl:
             if code == command:
                 return self.execute_command(command) or True
 
+        #check for invalid command
         if code.startswith(self.command_start):
             print("Invalid REPL command")
             return True
@@ -97,6 +98,14 @@ class Repl:
 
         return self.condense(code)
 
+    #checks if user enters in string, to print it
+    @staticmethod
+    def check_print(code):
+        if code.startswith('"') and code.endswith(';'):
+            return "printf(" + code[:-1] + ");putchar('\n');"
+        
+        return code
+
 
     def run(self):
         while True:
@@ -104,6 +113,7 @@ class Repl:
             code = self.condense(self.get_input())
             if not self.check_for_command(code):
                 if not code: continue
+                code = self.check_print(code)
                 code = self.check_multiline(code)
                 self.execute_code(code)
                 self.executer.cleanup(code)
