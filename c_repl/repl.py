@@ -58,7 +58,11 @@ class Repl:
         for command in self.commands:
             if code == command:
                 return self.execute_command(command) or True
-                
+
+        if code.startswith(self.command_start):
+            print("Invalid REPL command")
+            return True
+
         return False
     
     def execute_code(self, code):
@@ -67,7 +71,7 @@ class Repl:
     def get_input(self):
         try:
             return input()
-            
+
         except (KeyboardInterrupt, EOFError):
             self.execute_command('/quit')
 
