@@ -73,12 +73,12 @@ class Repl:
     def execute_code(self, code):
         print(self.executer.interpret(code))
 
-    def get_input(self):
+    def get_input(self, error_command = '/quit'):
         try:
             return input()
 
         except (KeyboardInterrupt, EOFError):
-            self.execute_command('/quit')
+            self.execute_command(error_command)
 
     def check_multiline(self, code, indent_level = 1):
 
@@ -86,7 +86,7 @@ class Repl:
             while True:
                 total_indent_level = self.indent * (indent_level + code.count('   ') + code.count(self.indent) )
                 self.print_start(self.multiline_start + total_indent_level)
-                new_code = self.get_input()
+                new_code = self.get_input(error_command = '/abort')
                 if new_code.endswith('}'): 
                     indent_level -= 1
 
