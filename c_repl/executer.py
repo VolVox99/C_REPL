@@ -1,5 +1,5 @@
 from c_repl.fileIO import FileIO
-from subprocess import check_output, CalledProcessError
+from subprocess import check_output, CalledProcessError, STDOUT
 from sys import exit
 from re import findall
 
@@ -14,7 +14,7 @@ class Executer:
 
     @staticmethod
     def run_command(command):
-        return check_output(command, shell = True).decode()
+        return check_output(command, shell = True, stderr = STDOUT).decode()
 
     def interpret(self, code):
         self.fileIO.write_code_to_file(code)
