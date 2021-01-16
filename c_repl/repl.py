@@ -19,7 +19,9 @@ class Repl:
         self._multiline_start = '...'
         self.indent = '\t'
         self.title = 'C REPL'
+        self.alternative_shell = False
         self.set_title()
+        
 
     @property
     def multiline_start(self):
@@ -51,9 +53,10 @@ class Repl:
 
     def set_title(self):
         try:
-            self.executer.run_command(f'title {self.title}')
+            self.executer.run_command(f'title {self.title}', False)
+
         except CalledProcessError:
-            pass
+            self.alternative_shell = True
 
     def execute_command(self, command :str, *args, **kwargs):
         return self.commands[command](*args, **kwargs)
@@ -71,7 +74,7 @@ class Repl:
         return False
     
     def execute_code(self, code):
-        print(self.executer.interpret(code))
+        print(self.executer.interpret(code, self.alternative_shell))
 
     def get_input(self, error_command = '/quit'):
         try:
