@@ -33,7 +33,11 @@ class Executer:
         else:
             self.removed_last_line_on_error = False
 
-        return self.run_command(self.output_file)
+        try:
+            return self.run_command(self.output_file)
+
+        except CalledProcessError:
+            return self.run_command(f'./{self.output_file}')
 
     def reset(self):
         self.__init__()

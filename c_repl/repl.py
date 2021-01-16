@@ -1,5 +1,6 @@
 import sys
 from c_repl.executer import Executer
+from subprocess import CalledProcessError
 
 class Repl:
     def __init__(self):
@@ -49,7 +50,10 @@ class Repl:
         pass
 
     def set_title(self):
-        self.executer.run_command(f'title {self.title}')
+        try:
+            self.executer.run_command(f'title {self.title}')
+        except CalledProcessError:
+            pass
 
     def execute_command(self, command :str, *args, **kwargs):
         return self.commands[command](*args, **kwargs)
