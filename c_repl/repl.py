@@ -1,6 +1,11 @@
 import sys
 from c_repl.executer import Executer
 from subprocess import CalledProcessError
+from prompt_toolkit.shortcuts import prompt
+from prompt_toolkit.lexers import PygmentsLexer
+from prompt_toolkit.styles.pygments import style_from_pygments_cls
+from pygments.lexers.c_cpp import CLexer
+from pygments.styles import get_style_by_name
 
 class Repl:
     def __init__(self):
@@ -19,10 +24,11 @@ class Repl:
         self._multiline_start = '...'
         self.indent = '\t'
         self.title = 'C REPL'
+        self.style = style_from_pygments_cls(get_style_by_name('C_REPL'))
         self.alternative_shell = False
         self.set_title()
-        
 
+    
     @property
     def multiline_start(self):
         return self._multiline_start + ' '
@@ -45,17 +51,30 @@ class Repl:
 
     @staticmethod
     def check_end_of_line(code_section, total_code):
-        return not code_section or (code_section.endswith('}') or code_section.endswith('};')) and total_code.count('{') == total_code.count('}')
+        return not code_section or (code_section.endswith('}') or code_section.endswith('};') or code_section.endswith(';')) and total_code.count('{') == total_code.count('}')
 
     @staticmethod
     def help_command():
         pass
+
+    #checks if user enters in string, to print it
+    @staticmethod
+    def check_print(code):
+        if code.startswith('"') and code.endswith(';'):
+            return "printf(" + code[:-1] + ");putchar('\n');"
+        
+        return code
+
+    @staticmethod
+    def flush():
+        print()
 
     def set_title(self):
         try:
             self.executer.run_command(f'title {self.title}', False)
 
         except CalledProcessError:
+            #means that shell is not cmd
             self.alternative_shell = True
 
     def execute_command(self, command :str, *args, **kwargs):
@@ -78,7 +97,7 @@ class Repl:
 
     def get_input(self, error_command = '/quit'):
         try:
-            return input()
+            return prompt('', lexer = PygmentsLexer(CLexer), style = self.style)
 
         except (KeyboardInterrupt, EOFError):
             self.execute_command(error_command)
@@ -90,28 +109,24 @@ class Repl:
                 total_indent_level = self.indent * (indent_level + code.count('   ') + code.count(self.indent) )
                 self.print_start(self.multiline_start + total_indent_level)
                 new_code = self.get_input(error_command = '/abort')
-                if new_code.endswith('}'): 
-                    indent_level -= 1
 
-                code += new_code
-                if self.check_end_of_line(new_code, code):
-                    break
+                #checking that its not empty
+                if new_code:
+                    if new_code.endswith('}'): 
+                        indent_level -= 1
 
-                elif self.check_for_command(new_code):
-                    return ''
+                    code += new_code
+                    if self.check_end_of_line(new_code, code):
+                        break
+
+                    elif self.check_for_command(new_code):
+                        return ''
                 
-                #recursion to account for nested, ie for loop in function
-                code = self.check_multiline(self.condense(code), indent_level + 1)
+                    #recursion to account for nested, ie for loop in function
+                    code = self.check_multiline(self.condense(code), indent_level + 1)
 
         return self.condense(code)
-
-    #checks if user enters in string, to print it
-    @staticmethod
-    def check_print(code):
-        if code.startswith('"') and code.endswith(';'):
-            return "printf(" + code[:-1] + ");putchar('\n');"
-        
-        return code
+    
 
 
     def run(self):
