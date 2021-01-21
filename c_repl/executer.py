@@ -16,7 +16,7 @@ class Executer:
     def run_command(command, show_error = True):
         return check_output(command, shell = True, stderr = None if show_error else STDOUT).decode()
 
-    def interpret(self, code, alternative_shell = False):
+    def interpret(self, code):
         self.fileIO.write_code_to_file(code)
         try:
             self.run_command(f'gcc {self.fileIO.file} -o {self.output_file}')
@@ -33,11 +33,8 @@ class Executer:
         else:
             self.removed_last_line_on_error = False
 
-        try:
-            return self.run_command(f'./{self.output_file}' if alternative_shell else self.output_file)
+        return self.run_command(f'.\{self.output_file}')
 
-        except CalledProcessError:
-            return self.run_command(f'./{self.output_file}')
 
     def reset(self):
         self.__init__()

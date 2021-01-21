@@ -25,7 +25,6 @@ class Repl:
         self.indent = '\t'
         self.title = 'C REPL'
         self.style = style_from_pygments_cls(get_style_by_name('C_REPL'))
-        self.alternative_shell = False
         self.set_title()
 
     
@@ -75,7 +74,7 @@ class Repl:
 
         except CalledProcessError:
             #means that shell is not cmd
-            self.alternative_shell = True
+            pass
 
     def execute_command(self, command :str, *args, **kwargs):
         return self.commands[command](*args, **kwargs)
@@ -93,7 +92,7 @@ class Repl:
         return False
     
     def execute_code(self, code):
-        print(self.executer.interpret(code, self.alternative_shell))
+        print(self.executer.interpret(code))
 
     def get_input(self, error_command = '/quit'):
         try:
