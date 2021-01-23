@@ -22,7 +22,7 @@ class Repl:
 
         self._regular_start = '>>>'
         self._multiline_start = '...'
-        self.indent = '\t'
+        self.indent = ' ' * 4
         self.title = 'C REPL'
         self.style = style_from_pygments_cls(get_style_by_name('C_REPL'))
         self.set_title()
@@ -94,9 +94,12 @@ class Repl:
     def execute_code(self, code):
         print(self.executer.interpret(code))
 
-    def get_input(self, error_command = '/quit'):
+    def get_input(self, prompt_start = None, error_command = '/quit'):
+        #hack to set self property as default argument
+        prompt_start = prompt_start or self.regular_start
+
         try:
-            return prompt('', lexer = PygmentsLexer(CLexer), style = self.style)
+            return prompt(prompt_start, lexer = PygmentsLexer(CLexer), style = self.style)
 
         except (KeyboardInterrupt, EOFError):
             self.execute_command(error_command)
@@ -105,9 +108,8 @@ class Repl:
 
         if code.endswith('{') or (not code.endswith(';') and not code.endswith('}') and not code.startswith('#')):
             while True:
-                total_indent_level = self.indent * (indent_level + code.count('   ') + code.count(self.indent) )
-                self.print_start(self.multiline_start + total_indent_level)
-                new_code = self.get_input(error_command = '/abort')
+                total_indent_level = self.indent * (indent_level + code.count('   ') + code.count(self.indent))
+                new_code = self.get_input(prompt_start = str(self.multiline_start + total_indent_level), error_command = '/abort')
 
                 #checking that its not empty
                 if new_code:
@@ -130,7 +132,6 @@ class Repl:
 
     def run(self):
         while True:
-            self.print_start(self.regular_start)
             code = self.condense(self.get_input())
             if not self.check_for_command(code):
                 if not code: continue
